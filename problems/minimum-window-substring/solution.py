@@ -40,4 +40,4 @@ class Solution(object):
                 if ok and (mini_window is None or len(substring) < len(mini_window)):
                     mini_window = substring
 
-        return mini_window                    
+        return mini_window if mini_window else ""                
