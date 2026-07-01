@@ -1,43 +1,39 @@
 class Solution(object):
     def minWindow(self, s, t):
-        
-        mini_window = None
-        
-        # Early exit using impossible case
+
         if len(s) < len(t):
             return ""
 
-        # Generating freq_t 
-        freq_t = [0] * 52
-        for ch in t:
-            if 'A' <= ch <= 'Z':
-                idx = ord(ch) - ord('A')
-            else:
-                idx = ord(ch) - ord('a') + 26
-            freq_t[idx]  += 1 
+        from collections import Counter
 
-        # Generating all substring
-        for start in range(len(s)):
-            for end in range(start, len(s)):
-                substring = s[start: end + 1]
-                freq_substring = [0]*52
+        need = Counter(t)
+        missing = len(t)
 
-                # Generating freq for every substring
-                for ch in substring:
-                    if 'A' <= ch <= 'Z':
-                        idx = ord(ch) - ord('A')
-                    else:
-                        idx = ord(ch) - ord('a') + 26
-                    freq_substring[idx] += 1 
+        start = 0
+        mini_window = None
 
-                # Checking freq of t in freq_substring
-                ok = True
-                for i in range(52):
-                    if freq_substring[i] < freq_t[i]:
-                        ok = False
-                        break
+        for end in range(len(s)):
 
-                if ok and (mini_window is None or len(substring) < len(mini_window)):
-                    mini_window = substring
+            ch = s[end]
 
-        return mini_window if mini_window else ""                
+            if need[ch] > 0:
+                missing -= 1
+
+            need[ch] -= 1
+
+            # shrink when valid
+            while missing == 0:
+
+                window_len = end - start + 1
+                if mini_window is None or window_len < len(mini_window):
+                    mini_window = s[start:end + 1]
+
+                left_char = s[start]
+                need[left_char] += 1
+
+                if need[left_char] > 0:
+                    missing += 1
+
+                start += 1
+
+        return mini_window if mini_window else ""
